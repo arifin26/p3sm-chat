@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,83 +9,112 @@ import {
   Dimensions,
   Alert,
   ScrollView,
+  AppState,
 } from 'react-native';
 import {Bangunan} from '../../../assets';
+import {useNavigation} from '@react-navigation/native';
+import {SOCKET_URL} from '../../../utils/API';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import DraggableFlatList, {
+  RenderItemParams,
+} from 'react-native-draggable-flatlist';
 const Grup = () => {
+  const NUM_ITEMS = 10;
+  const navigation = useNavigation();
+
   const [modalVisible, setmodalVisible] = useState(false);
   const [userSelected, setuserSelected] = useState([]);
-  const [data, setdata] = useState([
-    {
-      id: 1,
-      name: 'Comunity',
-      image: Bangunan,
-      count: 124.711,
-    },
-    {
-      id: 2,
-      name: 'Housing',
-      image: Bangunan,
-      count: 234.722,
-    },
-    {
-      id: 3,
-      name: 'Jobs',
-      image: Bangunan,
-      count: 324.723,
-    },
-    {
-      id: 4,
-      name: 'Personal',
-      image: Bangunan,
-      count: 154.573,
-    },
-    {
-      id: 5,
-      name: 'For sale',
-      image: Bangunan,
-      count: 124.678,
-    },
-  ]);
+  const [data, setdata] = useState([]);
+  const [appState, setAppState] = useState(AppState.currentState);
+
+  useEffect(() => {
+    AsyncStorage.getItem('@access_token').then(value => {
+      console.log('token', value);
+      fetch(`${SOCKET_URL}/api/v1/groupList`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${value}`,
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(res => res.json())
+        .then(res => {
+          setdata(res.data);
+          console.log(res);
+        })
+        .catch(err => {
+          console.log('err grup list', err);
+        });
+    });
+
+    AppState.addEventListener('change', handleAppStateChange);
+    return () => {
+      AppState.removeEventListener('change', handleAppStateChange);
+    };
+  }, []);
+
+  const handleAppStateChange = nextAppState => {
+    console.log('App State: ' + nextAppState);
+    if (appState != nextAppState) {
+      if (appState.match(/inactive|background/) && nextAppState === 'active') {
+        console.log('App State: ' + 'App has come to the foreground!');
+        alert('App State: ' + 'App has come to the foreground!');
+      }
+      alert('App State: ' + nextAppState);
+      setAppState(nextAppState);
+    }
+  };
 
   const clickEventListener = item => {
-    Alert.alert('Message', 'Item clicked. ' + item.name);
+    let dataSetChat = {
+      id: item.target_id,
+      room_id: item.room_id,
+      name: item.name,
+      picture: item.picture,
+      tipe: item.tipe,
+    };
+    navigation.navigate('Chat', dataSetChat);
   };
-  const renderItem = ({item}) => {
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          clickEventListener(item);
-        }}>
-        <View style={styles.row}>
-          <Image style={styles.image} source={item.image} />
-          <View>
-            <View style={styles.nameContainer}>
-              <Text
-                style={styles.nameTxt}
-                numberOfLines={1}
-                ellipsizeMode="tail">
-                {item.name}
-              </Text>
-              <Text style={styles.mblTxt}>{item.count}</Text>
-            </View>
-            <View style={styles.msgContainer}>
-              <Text style={styles.msgTxt}>grup</Text>
-            </View>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
-  };
+
   return (
     <View style={styles.container}>
+      {/* <DraggableFlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => `draggable-item-${item}`}
+        onDragEnd={({data}) => setdata(data)}
+      /> */}
       <FlatList
         style={styles.contentList}
         columnWrapperStyle={styles.listContainer}
         data={data}
-        keyExtractor={item => {
-          return item.id;
+        keyExtractor={(item, index) => item.sent_at}
+        renderItem={({item}) => {
+          return (
+            <TouchableOpacity
+              onPress={() => {
+                clickEventListener(item);
+              }}>
+              <View style={styles.row}>
+                <Image style={styles.image} source={{uri: item.picture}} />
+                <View>
+                  <View style={styles.nameContainer}>
+                    <Text
+                      style={styles.nameTxt}
+                      numberOfLines={1}
+                      ellipsizeMode="tail">
+                      {item.name}
+                    </Text>
+                    <Text style={styles.mblTxt}>{item.tipe}</Text>
+                  </View>
+                  <View style={styles.msgContainer}>
+                    <Text style={styles.msgTxt}>{item.last_message}</Text>
+                  </View>
+                </View>
+              </View>
+            </TouchableOpacity>
+          );
         }}
-        renderItem={renderItem}
       />
     </View>
   );

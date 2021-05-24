@@ -13,6 +13,9 @@ import Power from './image/power.png';
 import Menu_chat from './image/menu_chat.png';
 import Nomor_telf from './image/nomor_telf.png';
 import Ubah_password from './image/ubah_password.png';
+import LOGO_SPLASH from './image/p3sm.png';
+import send from './image/send.png';
+import scroolBottom from './image/scrollBottom.png';
 export {
   User,
   Back_button,
@@ -29,4 +32,7 @@ export {
   Menu_chat,
   Nomor_telf,
   Ubah_password,
+  LOGO_SPLASH,
+  send,
+  scroolBottom,
 };

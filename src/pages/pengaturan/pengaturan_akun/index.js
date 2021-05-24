@@ -14,13 +14,41 @@ import {useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import Header_not_beranda from '../../../component/Header_not_beranda';
 import {Power, Info, Ubah_password, Nomor_telf} from '../../../assets';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Pengaturan_akun = () => {
+const Pengaturan_akun = props => {
   const navigation = useNavigation();
   const [modalVisible, setmodalVisible] = useState(false);
   const [userSelected, setuserSelected] = useState([]);
   const [data, setdata] = useState([]);
 
+  const logout = () => {
+    if (logout) {
+      Alert.alert(
+        'P3SM CHAT',
+        'Yakin Mau Keluar ?',
+        [
+          {
+            text: 'Batal',
+            onPress: () => {
+              return null;
+            },
+          },
+          {
+            text: 'Iya',
+            onPress: () => {
+              AsyncStorage.clear();
+              props.navigation.navigate('Signin');
+            },
+          },
+        ],
+        {cancelable: false},
+      );
+    } else {
+      global.currentScreenIndex = 'home';
+      props.navigation.navigate('home');
+    }
+  };
   return (
     <View style={styles.container}>
       <Header_not_beranda title="Pengaturan Akun" />
@@ -75,23 +103,24 @@ const Pengaturan_akun = () => {
           </View>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity>
-        <View style={styles.row}>
-          <View style={styles.icon}>
-            <Image source={Power} style={styles.pic} />
-          </View>
-          <View>
-            <View style={styles.nameContainer}>
+
+      <View style={styles.row}>
+        <View style={styles.icon}>
+          <Image source={Power} style={styles.pic} />
+        </View>
+        <View>
+          <View style={styles.nameContainer}>
+            <TouchableOpacity onPress={logout}>
               <Text
                 style={styles.nameTxt}
                 numberOfLines={1}
                 ellipsizeMode="tail">
                 Hapus akun
               </Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
-      </TouchableOpacity>
+      </View>
     </View>
   );
 };

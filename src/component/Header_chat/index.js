@@ -51,12 +51,12 @@ const Header_chat = ({name, onpress, inpress, status, image}) => {
           </View>
         </View>
       </View>
-      {/* <TouchableOpacity onPress={inpress} style={{width: '100%'}}>
+      <TouchableOpacity onPress={inpress} style={{width: '100%'}}>
         <Image
           source={Menu_chat}
           style={{width: 20, height: 20, marginLeft: '25%'}}
         />
-      </TouchableOpacity> */}
+      </TouchableOpacity>
     </View>
   );
 };

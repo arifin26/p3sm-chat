@@ -12,9 +12,9 @@ import {
   StatusBar,
   TouchableOpacity,
   KeyboardAvoidingView,
-  AsyncStorage,
 } from 'react-native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {SOCKET_URL} from '../../utils/API';
 const Signin = props => {
   let [user_id, id] = useState('');
   let [username, setusername] = useState('');
@@ -22,10 +22,10 @@ const Signin = props => {
   let [loading, setLoading] = useState(false);
   let [errortext, setErrortext] = useState('');
 
-  const Signin = () => {
+  const Kirim = () => {
     setErrortext('');
     if (!username) {
-      Alert.alert('Tolong isi no.telp !');
+      Alert.alert('Tolong isi username !');
       return;
     }
     if (!password) {
@@ -33,28 +33,41 @@ const Signin = props => {
       return;
     }
     setLoading(true);
+    let details = {
+      username: username,
+      password: password,
+    };
 
+    let formBody = [];
+    for (let property in details) {
+      let encodedKey = encodeURIComponent(property);
+      let encodedValue = encodeURIComponent(details[property]);
+      formBody.push(encodedKey + '=' + encodedValue);
+    }
+    formBody = formBody.join('&');
     console.log(user_id);
-    fetch('https://csi-api.mandiritk.com/auth/login', {
+    fetch(`${SOCKET_URL}/api/v1/login`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: JSON.stringify({
-        username: username,
-        password: password,
-      }),
+      body: formBody,
     })
       .then(response => response.json())
 
       .then(response => {
         setLoading(false);
-        // console.log(response);
+        console.log(response);
         if (response.status === true) {
+          console.log(response);
+          AsyncStorage.setItem('@id', JSON.stringify(response.data.id));
+          AsyncStorage.setItem('@email', response.data.email);
           AsyncStorage.setItem('@access_token', response.data.token);
+          AsyncStorage.setItem('@image', JSON.stringify(response.data.picture));
+          props.navigation.navigate('home');
         } else {
-          alert(response.message);
+          Alert.alert(response.message);
         }
       })
       .catch(error => {
@@ -76,27 +89,27 @@ const Signin = props => {
         <View style={{marginTop: 100}}>
           <KeyboardAvoidingView enabled>
             <View style={{alignItems: 'center'}}>
-              <Text style={{color: '#fff', fontSize: 40}}>ZAMORA</Text>
+              <Text style={{color: '#fff', fontSize: 40}}>P3SM CHAT</Text>
             </View>
             <View style={{paddingTop: 50}}>
               <View style={styles.SectionStyle}>
                 <TextInput
+                  inputStyle={{color: 'red'}}
                   style={styles.inputStyle}
                   onChangeText={username => setusername(username)}
-                  placeholder="Masukkan No.telp" //dummy@abc.com
+                  placeholder="Masukkan Username" //dummy@abc.com
                   placeholderTextColor="#00c6ff"
                   onSubmitEditing={Keyboard.dismiss}
-                  keyboardType="numeric"
                   blurOnSubmit={false}
                 />
               </View>
               <View style={styles.SectionStyle}>
                 <TextInput
+                  inputStyle={{color: 'red'}}
                   style={styles.inputStyle}
                   onChangeText={password => setpassword(password)}
                   placeholder="Masukkan Password" //12345
                   placeholderTextColor="#00c6ff"
-                  keyboardType="numeric"
                   onSubmitEditing={Keyboard.dismiss}
                   blurOnSubmit={false}
                   secureTextEntry={true}
@@ -111,7 +124,7 @@ const Signin = props => {
             <TouchableOpacity
               style={styles.buttonStyle}
               activeOpacity={0.5}
-              onPress={() => props.navigation.navigate('Beranda')}>
+              onPress={() => Kirim()}>
               <Text style={styles.buttonTextStyle}>Masuk</Text>
             </TouchableOpacity>
           </KeyboardAvoidingView>
@@ -158,6 +171,7 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15,
     borderWidth: 1,
+    color: '#000',
     borderRadius: 10,
     borderColor: '#fff',
   },

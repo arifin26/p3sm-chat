@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "783752534012",
+    "project_id": "p3sm-chat",
+    "storage_bucket": "p3sm-chat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:783752534012:android:051ed336da4bbf3136c479",
+        "android_client_info": {
+          "package_name": "com.zamora"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "783752534012-iv83t6ln7et4ddb3tgodal9gpiv4us2u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-CK1VXCyGFVu66JIduTcyiPo3-xpJCII"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "783752534012-iv83t6ln7et4ddb3tgodal9gpiv4us2u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

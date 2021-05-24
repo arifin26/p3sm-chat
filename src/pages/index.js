@@ -1,3 +1,4 @@
+import SplashScreen from './Splash';
 import Signin from './login';
 import Beranda from './beranda';
 import Chat from './chat';
@@ -19,4 +20,5 @@ export {
   Pengaturan_akun,
   Pusat_bantuan,
   Ubah_sandi,
+  SplashScreen,
 };
