@@ -10,13 +10,12 @@ import {
   StatusBar,
   FlatList,
   useWindowDimensions,
-  Touchable,
 } from 'react-native';
 import Header from '../../component/Header';
 import {useNavigation} from '@react-navigation/native';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import Grup from './grup';
-var PushNotification = require('react-native-push-notification');
+import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
 const SecondRoute = () => <Grup />;

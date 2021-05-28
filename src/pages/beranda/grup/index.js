@@ -25,7 +25,7 @@ const Grup = () => {
   const [modalVisible, setmodalVisible] = useState(false);
   const [userSelected, setuserSelected] = useState([]);
   const [data, setdata] = useState([]);
-  const [appState, setAppState] = useState(AppState.currentState);
+  // const [appState, setAppState] = useState(AppState.currentState);
 
   useEffect(() => {
     AsyncStorage.getItem('@access_token').then(value => {
@@ -39,31 +39,19 @@ const Grup = () => {
       })
         .then(res => res.json())
         .then(res => {
-          setdata(res.data);
           console.log(res);
+          setdata(res.data);
         })
         .catch(err => {
           console.log('err grup list', err);
         });
     });
 
-    AppState.addEventListener('change', handleAppStateChange);
-    return () => {
-      AppState.removeEventListener('change', handleAppStateChange);
-    };
+    // AppState.addEventListener('change', handleAppStateChange);
+    // return () => {
+    //   AppState.removeEventListener('change', handleAppStateChange);
+    // };
   }, []);
-
-  const handleAppStateChange = nextAppState => {
-    console.log('App State: ' + nextAppState);
-    if (appState != nextAppState) {
-      if (appState.match(/inactive|background/) && nextAppState === 'active') {
-        console.log('App State: ' + 'App has come to the foreground!');
-        alert('App State: ' + 'App has come to the foreground!');
-      }
-      alert('App State: ' + nextAppState);
-      setAppState(nextAppState);
-    }
-  };
 
   const clickEventListener = item => {
     let dataSetChat = {

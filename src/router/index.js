@@ -15,6 +15,7 @@ import {
   Pusat_bantuan,
   Ubah_sandi,
   SplashScreen,
+  NewFeedScreen,
 } from '../pages';
 const Stack = createStackNavigator();
 const RootStack = createCompatNavigatorFactory(createStackNavigator)(
@@ -79,6 +80,11 @@ function Screen() {
       <Stack.Screen
         name="Ubah_sandi"
         component={Ubah_sandi}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="NewFeedScreen"
+        component={NewFeedScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

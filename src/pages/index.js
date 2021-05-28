@@ -9,6 +9,7 @@ import Pengaturan from './pengaturan';
 import Pengaturan_akun from './pengaturan/pengaturan_akun';
 import Pusat_bantuan from './pengaturan/pengaturan_pusat_bantuan';
 import Ubah_sandi from './pengaturan/pengaturan_akun/ubah_password';
+import NewFeedScreen from './chat/component_chat/upload_video';
 export {
   Signin,
   Beranda,
@@ -21,4 +22,5 @@ export {
   Pusat_bantuan,
   Ubah_sandi,
   SplashScreen,
+  NewFeedScreen,
 };

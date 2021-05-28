@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   StyleSheet,
   Text,
@@ -18,19 +18,18 @@ import {
   BackHandler,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import Modal from 'react-native-modal';
+import RBSheet from 'react-native-raw-bottom-sheet';
 import {SOCKET_URL} from '../../utils/API';
 import {AutoScrollFlatList} from 'react-native-autoscroll-flatlist';
 import Header_chat from '../../component/Header_chat';
 import IO from 'socket.io-client';
-
+import {send, file_send} from '../../assets';
+import Share_mode from '../../utils/share mode';
+import moment from 'moment';
 let socket;
-const NEW_CHAT_MESSAGE_EVENT = 'chatMessage'; // Name of the event
-const SOCKET_SERVER_URL = 'http://192.168.0.23:5000';
+const SOCKET_SERVER_URL = 'http://192.168.0.73:5000';
 
 const Chat = props => {
-  const [dialog, setDialog] = useState(false);
   const [id, setid] = useState(null);
   const [msg, setmsg] = useState('');
   const [chatMessage, setchatMessage] = useState('');
@@ -38,7 +37,14 @@ const Chat = props => {
   const [tinggi, settinggi] = useState('');
   const [isi_teks, set_isi_teks] = useState(false);
   const [messages, setmessages] = useState('');
-
+  const messagesEndRef = useRef(null);
+  const refRBSheet = useRef();
+  const scrollToBottom = () => {
+    const scroll =
+      messagesEndRef.current?.scrollHeight -
+      messagesEndRef.current?.clientHeight;
+    messagesEndRef.current.scrollToEnd({animated: false});
+  };
   const data_chat = () => {
     AsyncStorage.getItem('@access_token').then(value => {
       fetch(
@@ -53,7 +59,7 @@ const Chat = props => {
       )
         .then(res => res.json())
         .then(res => {
-          console.log('data pesan');
+          console.log('data pesan', res.data);
           setchatMessages(res.data);
         })
         .catch(err => {
@@ -62,10 +68,14 @@ const Chat = props => {
     });
   };
   useEffect(() => {
+    chatMessage != '' ? set_isi_teks(true) : set_isi_teks(false);
+  });
+  useEffect(() => {
+    scrollToBottom();
+
     AsyncStorage.getItem('@id').then(value => {
       setid(JSON.parse(value));
     });
-    // chatMessage != '' ? set_isi_teks(true) : set_isi_teks(false);
     let isMounted = true;
     AsyncStorage.getItem('@access_token').then(value => {
       socket = IO(SOCKET_SERVER_URL, {
@@ -74,32 +84,11 @@ const Chat = props => {
         },
       });
       socket.on('message', message => {
-        console.log('pesan blm masuk', message);
         if (message.send_by !== null) {
-          // var mes = {
-          //   message: message.message,
-          //   room_id: message.room_id,r
-          //   send_by: message.send_by,
-          //   sender_name: message.sender_name,
-          //   time: message.time,
-          //   type_message: message.type_message,
-          // };
-
           setchatMessages(item => [...item, message]);
-          console.log('pesan blm ', chatMessages);
         }
       });
     });
-
-    data_chat();
-    return () => {
-      data_chat();
-      isMounted = false;
-      setchatMessages([]);
-    };
-  }, []);
-
-  useEffect(() => {
     AsyncStorage.getItem('@email').then(value => {
       socket.emit('joinRoom', {
         username: value,
@@ -108,7 +97,14 @@ const Chat = props => {
         targetId: props.route.params.id,
       });
     });
-  });
+    data_chat();
+    return () => {
+      data_chat();
+      isMounted = false;
+      setchatMessages([]);
+    };
+  }, []);
+
   const submitChatMessage = e => {
     // socket.on(NEW_CHAT_MESSAGE_EVENT, ({res_id, msg, username}) => {
     //   setchatMessages({msg, res_id, username});
@@ -122,81 +118,27 @@ const Chat = props => {
         targetId: props.route.params.id,
       });
       setchatMessage('');
-      data_chat();
     });
   };
 
-  const toggleModal = () => {
-    setDialog(!dialog);
-  };
   const Dialog_media = () => {
     return (
-      <View style={styles.view_modal_position}>
-        <Modal isVisible={dialog}>
-          <View style={styles.view_modal_object}>
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                marginTop: 20,
-              }}>
-              <View style={{flex: 1, flexDirection: 'row'}}>
-                <View style={styles.profile}>
-                  <View style={styles.avatarWrapper}>
-                    <Image
-                      style={styles.avatar}
-                      source={{
-                        uri: 'https://img.icons8.com/fluent/48/000000/file.png',
-                      }}
-                    />
-                  </View>
-                </View>
-
-                <View style={styles.profile}>
-                  <View style={styles.avatarWrapper}>
-                    <Image
-                      style={styles.avatar}
-                      source={{
-                        uri: 'https://img.icons8.com/fluent/48/000000/file.png',
-                      }}
-                    />
-                  </View>
-                </View>
-
-                <View style={styles.profile}>
-                  <View style={styles.avatarWrapper}>
-                    <Image
-                      style={styles.avatar}
-                      source={{
-                        uri: 'https://img.icons8.com/fluent/48/000000/file.png',
-                      }}
-                    />
-                  </View>
-                </View>
-
-                <View style={styles.profile}>
-                  <View style={styles.avatarWrapper}>
-                    <Image
-                      style={styles.avatar}
-                      source={{
-                        uri: 'https://img.icons8.com/fluent/48/000000/file.png',
-                      }}
-                    />
-                  </View>
-                </View>
-              </View>
-            </View>
-
-            <TouchableOpacity onPress={() => this.toggleModal}>
-              <Text style={styles.view_modal_teks}>
-                Your Password is reset. Check your email to complete the action.
-              </Text>
-            </TouchableOpacity>
-
-            {/* <Button title="Kembali"  /> */}
-          </View>
-        </Modal>
+      <View>
+        <RBSheet
+          ref={refRBSheet}
+          closeOnDragDown={true}
+          closeOnPressMask={true}
+          customStyles={{
+            wrapper: {
+              backgroundColor: 'transparent',
+            },
+            draggableIcon: {
+              backgroundColor: '#000',
+            },
+          }}>
+          {/*Bottom Sheet inner View*/}
+          <Share_mode />
+        </RBSheet>
       </View>
     );
   };
@@ -207,7 +149,7 @@ const Chat = props => {
         name={props.route.params.name}
         // status={counter.status}
         image={props.route.params.picture}
-        inpress={toggleModal}
+        inpress
       />
       <KeyboardAvoidingView style={styles.keyboard}>
         {/* <FlatList
@@ -217,8 +159,8 @@ const Chat = props => {
             }}
             renderItem={this._renderItem}
           /> */}
-
         <AutoScrollFlatList
+          ref={messagesEndRef}
           threshold={20}
           data={chatMessages}
           keyExtractor={(item, index) => item.time}
@@ -235,13 +177,9 @@ const Chat = props => {
                         alignItems: 'flex-end',
                         marginTop: 20,
                       }}>
-                      {/* <Text style={styles.msgTxt_time}>
-                        {
-                          new Date(Date.parse(item.time))
-                            .toTimeString()
-                            .split(' ')[0]
-                        }
-                      </Text> */}
+                      <Text style={styles.msgTxt_time}>
+                        {moment(item.time).format('MMMM Do YYYY, h:mm:ss a')}
+                      </Text>
                     </View>
                   </View>
                 </View>
@@ -261,13 +199,9 @@ const Chat = props => {
                         alignItems: 'flex-end',
                         marginTop: 20,
                       }}>
-                      {/* <Text style={styles.msgTxt_time}>
-                        {
-                          new Date(Date.parse(item.time))
-                            .toTimeString()
-                            .split(' ')[0]
-                        }
-                      </Text> */}
+                      <Text style={styles.msgTxt_time}>
+                        {moment(item.time).format('MMMM Do YYYY, h:mm:ss a')}
+                      </Text>
                     </View>
                   </View>
                 </View>
@@ -334,44 +268,35 @@ const Chat = props => {
               underlineColorAndroid="transparent"
             />
           </View>
-          {/* {isi_teks == false ? (
-            <View style={{flexDirection: 'row'}}>
-              <View style={styles.icon_text_input}>
-                <TouchableOpacity onPress={() => setDialog(true)}>
-                  <Image
-                    source={{
-                      uri:
-                        'https://img.icons8.com/ios-filled/50/000000/attach.png',
-                    }}
-                    style={{height: 30, width: 30}}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-          ) : ( */}
-          <View style={{justifyContent: 'center'}}>
-            <View
-              style={{
-                justifyContent: 'center',
-                marginRight: 20,
-                height: 40,
-                width: 40,
-                elevation: 5,
-                backgroundColor: '#00c6ff',
-                borderRadius: 20,
-              }}>
-              <TouchableOpacity onPress={submitChatMessage}>
+          {isi_teks == false ? (
+            <View style={{justifyContent: 'center'}}>
+              <TouchableOpacity onPress={() => refRBSheet.current.open()}>
                 <Image
-                  style={{height: 25, width: 25, alignSelf: 'center'}}
-                  source={{
-                    uri:
-                      'https://img.icons8.com/material-rounded/48/000000/filled-sent.png',
+                  source={file_send}
+                  style={{
+                    height: 40,
+                    width: 40,
+                    alignSelf: 'center',
+                    marginRight: 20,
                   }}
                 />
               </TouchableOpacity>
             </View>
-          </View>
-          {/* )} */}
+          ) : (
+            <View style={{justifyContent: 'center'}}>
+              <TouchableOpacity onPress={submitChatMessage}>
+                <Image
+                  style={{
+                    height: 40,
+                    width: 40,
+                    alignSelf: 'center',
+                    marginRight: 20,
+                  }}
+                  source={send}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </KeyboardAvoidingView>
       <Dialog_media />
@@ -482,40 +407,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#202020',
     fontWeight: '600',
-  },
-  view_modal_position: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  view_modal_object: {
-    paddingHorizontal: 10,
-    backgroundColor: '#fff',
-    borderRadius: 6,
-    paddingVertical: 20,
-  },
-  view_modal_teks: {
-    textAlign: 'center',
-    fontSize: 14,
-    marginTop: 70,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarWrapper: {
-    width: 50,
-    height: 50,
-    borderWidth: 1,
-    borderColor: 'rgba(70, 159, 78, 0.12)',
-    borderRadius: 50 / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(70, 159, 78, 0.12)',
-  },
-  profile: {
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

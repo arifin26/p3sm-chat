@@ -16,6 +16,13 @@ import Ubah_password from './image/ubah_password.png';
 import LOGO_SPLASH from './image/p3sm.png';
 import send from './image/send.png';
 import scroolBottom from './image/scrollBottom.png';
+import file_send from './image/file_icon.png';
+import pdf from './image/icon_share/pdf.png';
+import picture from './image/icon_share/picture.png';
+import video from './image/icon_share/play-button.png';
+import xml from './image/icon_share/xml.png';
+import zip from './image/icon_share/zip.png';
+
 export {
   User,
   Back_button,
@@ -35,4 +42,10 @@ export {
   LOGO_SPLASH,
   send,
   scroolBottom,
+  file_send,
+  pdf,
+  picture,
+  video,
+  xml,
+  zip,
 };
