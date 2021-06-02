@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -8,8 +8,23 @@ import {
   BackHandler,
 } from 'react-native';
 import Header_not_beranda from '../../../component/Header_not_beranda';
+import {useNavigation} from '@react-navigation/native';
 
 const Pusat_bantuan = () => {
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', back_Button_Press);
+    };
+  });
+
+  const back_Button_Press = () => {
+    navigation.goBack();
+
+    return true;
+  };
   return (
     <View style={{flex: 1, backgroundColor: '#fff'}}>
       <Header_not_beranda title="Pusat bantuan" />

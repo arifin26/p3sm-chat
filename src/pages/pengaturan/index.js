@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,6 +9,7 @@ import {
   Dimensions,
   Alert,
   ScrollView,
+  BackHandler,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
@@ -21,7 +22,18 @@ const Pengaturan = () => {
   const [userSelected, setuserSelected] = useState([]);
   const navigation = useNavigation();
   const refRBSheet = useRef();
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', back_Button_Press);
+    };
+  });
 
+  const back_Button_Press = () => {
+    navigation.goBack();
+
+    return true;
+  };
   return (
     <View style={styles.container}>
       <Header_not_beranda title="Pengaturan" />

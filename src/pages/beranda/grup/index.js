@@ -10,7 +10,9 @@ import {
   Alert,
   ScrollView,
   AppState,
+  BackHandler,
 } from 'react-native';
+
 import {Bangunan} from '../../../assets';
 import {useNavigation} from '@react-navigation/native';
 import {SOCKET_URL} from '../../../utils/API';
@@ -47,12 +49,17 @@ const Grup = () => {
         });
     });
 
-    // AppState.addEventListener('change', handleAppStateChange);
-    // return () => {
-    //   AppState.removeEventListener('change', handleAppStateChange);
-    // };
+  
+    BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', back_Button_Press);
+    };
   }, []);
+  const back_Button_Press = () => {
+    BackHandler.exitApp();
 
+    return true;
+  };
   const clickEventListener = item => {
     let dataSetChat = {
       id: item.target_id,

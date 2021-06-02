@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   ImageBackground,
@@ -14,9 +14,18 @@ import {Gap} from '../../utils';
 import {Edit} from '../../assets';
 import Header_not_beranda from '../../component/Header_not_beranda';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Profil = () => {
   const navigation = useNavigation();
+  const [image, setimage] = useState(null);
+  AsyncStorage.getItem('@image').then(value => {
+    if (value != null) {
+      setimage(value);
+    } else {
+      setimage(null);
+    }
+  });
   return (
     <View style={{flex: 1, backgroundColor: '#fff'}}>
       <ScrollView>
@@ -46,7 +55,11 @@ const Profil = () => {
         />
       </View> */}
         <ImageBackground
-          source={require('../../assets/image/background.png')}
+          source={
+            image == null
+              ? require('../../assets/image/background.png')
+              : {uri: JSON.parse(image)}
+          }
           style={Styles.background}>
           <Gap height={180} />
 

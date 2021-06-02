@@ -1,7 +1,11 @@
 import React from 'react';
 import {Text, TouchableOpacity, Image, View} from 'react-native';
 import {Back_button} from '../../assets';
+import {useNavigation} from '@react-navigation/native';
+
 const Header_not_beranda = ({title, onpress}) => {
+  const navigation = useNavigation();
+
   return (
     <View
       style={{
@@ -12,7 +16,7 @@ const Header_not_beranda = ({title, onpress}) => {
         flexDirection: 'row',
       }}>
       <TouchableOpacity
-        onPress={onpress}
+        onPress={() => navigation.goBack()}
         style={{position: 'absolute', width: '100%'}}>
         <Image
           source={Back_button}

@@ -25,11 +25,19 @@ import Header_chat from '../../component/Header_chat';
 import IO from 'socket.io-client';
 import {send, file_send} from '../../assets';
 import Share_mode from '../../utils/share mode';
-import moment from 'moment';
+import moment, {locale} from 'moment';
+import 'moment/locale/id';
+import PushNotification from 'react-native-push-notification';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import {useNavigation} from '@react-navigation/native';
+
 let socket;
 const SOCKET_SERVER_URL = 'http://192.168.0.73:5000';
 
 const Chat = props => {
+  const navigation = useNavigation();
+
+  moment.locale();
   const [id, setid] = useState(null);
   const [msg, setmsg] = useState('');
   const [chatMessage, setchatMessage] = useState('');
@@ -45,6 +53,7 @@ const Chat = props => {
       messagesEndRef.current?.clientHeight;
     messagesEndRef.current.scrollToEnd({animated: false});
   };
+
   const data_chat = () => {
     AsyncStorage.getItem('@access_token').then(value => {
       fetch(
@@ -59,7 +68,6 @@ const Chat = props => {
       )
         .then(res => res.json())
         .then(res => {
-          console.log('data pesan', res.data);
           setchatMessages(res.data);
         })
         .catch(err => {
@@ -84,7 +92,10 @@ const Chat = props => {
         },
       });
       socket.on('message', message => {
-        if (message.send_by !== null) {
+        if (
+          message.send_by !== null &&
+          props.route.params.room_id == message.room_id
+        ) {
           setchatMessages(item => [...item, message]);
         }
       });
@@ -97,28 +108,69 @@ const Chat = props => {
         targetId: props.route.params.id,
       });
     });
+    PushNotification.configure({
+      onRegister: function (token) {
+        console.log('TOKEN:', token);
+      },
+
+      onNotification: function (notification) {
+        console.log('NOTIFICATION:', notification);
+
+        notification.finish(PushNotificationIOS.FetchResult.NoData);
+      },
+
+      onAction: function (notification) {
+        console.log('ACTION:', notification.action);
+        console.log('NOTIFICATION:', notification);
+      },
+
+      onRegistrationError: function (err) {
+        console.error(err.message, err);
+      },
+      permissions: {
+        alert: true,
+        badge: true,
+        sound: true,
+      },
+
+      popInitialNotification: true,
+
+      requestPermissions: true,
+    });
+    BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
+
     data_chat();
     return () => {
+      BackHandler.removeEventListener('hardwareBackPress', back_Button_Press);
+
       data_chat();
       isMounted = false;
       setchatMessages([]);
     };
   }, []);
+  const back_Button_Press = () => {
+    navigation.replace('Beranda')
 
+    return true;
+  };
   const submitChatMessage = e => {
     // socket.on(NEW_CHAT_MESSAGE_EVENT, ({res_id, msg, username}) => {
     //   setchatMessages({msg, res_id, username});
     // });
-    AsyncStorage.getItem('@id').then(value => {
-      socket.emit('chatMessage', {
-        msg: chatMessage,
-        username: JSON.parse(value),
-        room: props.route.params.room_id,
-        tipe: props.route.params.tipe,
-        targetId: props.route.params.id,
+    if (isi_teks == false) {
+      Alert.alert('pesan tidak boleh kosong');
+    } else {
+      AsyncStorage.getItem('@id').then(value => {
+        socket.emit('chatMessage', {
+          msg: chatMessage,
+          username: JSON.parse(value),
+          room: props.route.params.room_id,
+          tipe: props.route.params.tipe,
+          targetId: props.route.params.id,
+        });
+        setchatMessage('');
       });
-      setchatMessage('');
-    });
+    }
   };
 
   const Dialog_media = () => {
@@ -149,7 +201,7 @@ const Chat = props => {
         name={props.route.params.name}
         // status={counter.status}
         image={props.route.params.picture}
-        inpress
+        // inpress
       />
       <KeyboardAvoidingView style={styles.keyboard}>
         {/* <FlatList
@@ -178,7 +230,9 @@ const Chat = props => {
                         marginTop: 20,
                       }}>
                       <Text style={styles.msgTxt_time}>
-                        {moment(item.time).format('MMMM Do YYYY, h:mm:ss a')}
+                        {moment(item.time)
+                          .locale('id')
+                          .format('MMMM Do YYYY, h:mm:ss a')}
                       </Text>
                     </View>
                   </View>
@@ -200,7 +254,9 @@ const Chat = props => {
                         marginTop: 20,
                       }}>
                       <Text style={styles.msgTxt_time}>
-                        {moment(item.time).format('MMMM Do YYYY, h:mm:ss a')}
+                        {moment(item.time)
+                          .locale('id')
+                          .format('MMMM Do YYYY, h:mm:ss a')}
                       </Text>
                     </View>
                   </View>
@@ -268,35 +324,34 @@ const Chat = props => {
               underlineColorAndroid="transparent"
             />
           </View>
-          {isi_teks == false ? (
-            <View style={{justifyContent: 'center'}}>
-              <TouchableOpacity onPress={() => refRBSheet.current.open()}>
-                <Image
-                  source={file_send}
-                  style={{
-                    height: 40,
-                    width: 40,
-                    alignSelf: 'center',
-                    marginRight: 20,
-                  }}
-                />
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={{justifyContent: 'center'}}>
-              <TouchableOpacity onPress={submitChatMessage}>
-                <Image
-                  style={{
-                    height: 40,
-                    width: 40,
-                    alignSelf: 'center',
-                    marginRight: 20,
-                  }}
-                  source={send}
-                />
-              </TouchableOpacity>
-            </View>
-          )}
+          {/* {isi_teks == false ? null : (
+            // <View style={{justifyContent: 'center'}}>
+            //   <TouchableOpacity onPress={() => refRBSheet.current.open()}>
+            //     <Image
+            //       source={file_send}
+            //       style={{
+            //         height: 40,
+            //         width: 40,
+            //         alignSelf: 'center',
+            //         marginRight: 20,
+            //       }}
+            //     />
+            //   </TouchableOpacity>
+            // </View>
+          )} */}
+          <View style={{justifyContent: 'center'}}>
+            <TouchableOpacity onPress={submitChatMessage}>
+              <Image
+                style={{
+                  height: 40,
+                  width: 40,
+                  alignSelf: 'center',
+                  marginRight: 20,
+                }}
+                source={send}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       </KeyboardAvoidingView>
       <Dialog_media />

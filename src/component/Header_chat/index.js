@@ -1,7 +1,10 @@
 import React from 'react';
 import {Text, TouchableOpacity, Image, View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+
 import {Back_button, Menu_chat} from '../../assets';
 const Header_chat = ({name, onpress, inpress, status, image}) => {
+  const navigation = useNavigation();
   return (
     <View
       style={{
@@ -11,7 +14,7 @@ const Header_chat = ({name, onpress, inpress, status, image}) => {
         flexDirection: 'row',
       }}>
       <TouchableOpacity
-        onPress={onpress}
+        onPress={() => navigation.goBack()}
         style={{position: 'absolute', width: '100%'}}>
         <Image
           source={Back_button}
@@ -51,12 +54,12 @@ const Header_chat = ({name, onpress, inpress, status, image}) => {
           </View>
         </View>
       </View>
-      <TouchableOpacity onPress={inpress} style={{width: '100%'}}>
+      {/* <TouchableOpacity onPress={inpress} style={{width: '100%'}}>
         <Image
           source={Menu_chat}
           style={{width: 20, height: 20, marginLeft: '25%'}}
         />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };
