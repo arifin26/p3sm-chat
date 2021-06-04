@@ -149,7 +149,7 @@ const Chat = props => {
     };
   }, []);
   const back_Button_Press = () => {
-    navigation.replace('Beranda')
+    navigation.replace('Beranda');
 
     return true;
   };
@@ -157,20 +157,17 @@ const Chat = props => {
     // socket.on(NEW_CHAT_MESSAGE_EVENT, ({res_id, msg, username}) => {
     //   setchatMessages({msg, res_id, username});
     // });
-    if (isi_teks == false) {
-      Alert.alert('pesan tidak boleh kosong');
-    } else {
-      AsyncStorage.getItem('@id').then(value => {
-        socket.emit('chatMessage', {
-          msg: chatMessage,
-          username: JSON.parse(value),
-          room: props.route.params.room_id,
-          tipe: props.route.params.tipe,
-          targetId: props.route.params.id,
-        });
-        setchatMessage('');
+
+    AsyncStorage.getItem('@id').then(value => {
+      socket.emit('chatMessage', {
+        msg: chatMessage,
+        username: JSON.parse(value),
+        room: props.route.params.room_id,
+        tipe: props.route.params.tipe,
+        targetId: props.route.params.id,
       });
-    }
+      setchatMessage('');
+    });
   };
 
   const Dialog_media = () => {
@@ -324,34 +321,35 @@ const Chat = props => {
               underlineColorAndroid="transparent"
             />
           </View>
-          {/* {isi_teks == false ? null : (
-            // <View style={{justifyContent: 'center'}}>
-            //   <TouchableOpacity onPress={() => refRBSheet.current.open()}>
-            //     <Image
-            //       source={file_send}
-            //       style={{
-            //         height: 40,
-            //         width: 40,
-            //         alignSelf: 'center',
-            //         marginRight: 20,
-            //       }}
-            //     />
-            //   </TouchableOpacity>
-            // </View>
-          )} */}
-          <View style={{justifyContent: 'center'}}>
-            <TouchableOpacity onPress={submitChatMessage}>
-              <Image
-                style={{
-                  height: 40,
-                  width: 40,
-                  alignSelf: 'center',
-                  marginRight: 20,
-                }}
-                source={send}
-              />
-            </TouchableOpacity>
-          </View>
+          {isi_teks == false ? (
+            <View style={{justifyContent: 'center'}}>
+              <TouchableOpacity onPress={() => refRBSheet.current.open()}>
+                <Image
+                  source={file_send}
+                  style={{
+                    height: 40,
+                    width: 40,
+                    alignSelf: 'center',
+                    marginRight: 20,
+                  }}
+                />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={{justifyContent: 'center'}}>
+              <TouchableOpacity onPress={submitChatMessage}>
+                <Image
+                  style={{
+                    height: 40,
+                    width: 40,
+                    alignSelf: 'center',
+                    marginRight: 20,
+                  }}
+                  source={send}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </KeyboardAvoidingView>
       <Dialog_media />

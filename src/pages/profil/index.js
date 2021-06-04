@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   ImageBackground,
@@ -8,7 +8,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Touchable,
+  BackHandler,
 } from 'react-native';
 import {Gap} from '../../utils';
 import {Edit} from '../../assets';
@@ -19,6 +19,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const Profil = () => {
   const navigation = useNavigation();
   const [image, setimage] = useState(null);
+  const [name, setname] = useState(null);
+  const [no_hp, set_no_hp] = useState(null);
+  const [email, setemail] = useState(null);
+
   AsyncStorage.getItem('@image').then(value => {
     if (value != null) {
       setimage(value);
@@ -26,6 +30,39 @@ const Profil = () => {
       setimage(null);
     }
   });
+  AsyncStorage.getItem('@name').then(value => {
+    if (value != null) {
+      setname(value);
+    } else {
+      setname(null);
+    }
+  });
+  AsyncStorage.getItem('@no_hp').then(value => {
+    if (value != null) {
+      set_no_hp(value);
+    } else {
+      set_no_hp(null);
+    }
+  });
+  AsyncStorage.getItem('@email').then(value => {
+    if (value != null) {
+      setemail(value);
+    } else {
+      setemail(null);
+    }
+  });
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', back_Button_Press);
+    };
+  });
+
+  const back_Button_Press = () => {
+    navigation.goBack();
+
+    return true;
+  };
   return (
     <View style={{flex: 1, backgroundColor: '#fff'}}>
       <ScrollView>
@@ -85,7 +122,7 @@ const Profil = () => {
                   ellipsizeMode="tail"
                   numberOfLines={1}
                   style={Styles.name}>
-                  삼국시대 이전 이름 [출처: 한국민족문화대백과사전(이름)]
+                  {name == null ? 'nama kosong' : JSON.parse(name)}
                 </Text>
               </View>
             </View>
@@ -103,11 +140,11 @@ const Profil = () => {
 
                   fontSize: 12,
                 }}>
-                test@gmail.com
+                {email == null ? 'email kosong' : email}
               </Text>
             </View>
           </View>
-          <Gap height={20} />
+          {/* <Gap height={20} />
           <View style={{alignItems: 'center'}}>
             <View style={{width: '93%'}}>
               <Text style={Styles.title}>ALAMAT :</Text>
@@ -122,7 +159,7 @@ const Profil = () => {
                 Rw.08
               </Text>
             </View>
-          </View>
+          </View> */}
           <Gap height={20} />
           <View style={{alignItems: 'center'}}>
             <View style={{width: '93%'}}>
@@ -135,7 +172,7 @@ const Profil = () => {
 
                   fontSize: 12,
                 }}>
-                08578483909
+                {no_hp == null ? 'nomor kosong' : JSON.parse(no_hp)}
               </Text>
             </View>
           </View>

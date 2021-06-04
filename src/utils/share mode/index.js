@@ -8,15 +8,15 @@ import React, {useState, useRef} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
-  View,
   Text,
-  Button,
-  Image,
+  View,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import * as ImagePicker from 'react-native-image-picker';
 
-import {pdf, picture, video, xml, zip} from '../../assets';
+import {pdf, picture, video, xml, zip, camera} from '../../assets';
 //import basic react native components
 
 //import to show social icons
@@ -24,7 +24,78 @@ import {pdf, picture, video, xml, zip} from '../../assets';
 const Share_mode = ({value}) => {
   const navigation = useNavigation();
   const refRBSheet = useRef();
+  const [filePath, setFilePath] = useState({});
 
+  const chooseFile = () => {
+    let options = {
+      title: 'Select Image',
+      customButtons: [
+        {
+          name: 'customOptionKey',
+          title: 'Choose Photo from Custom Option',
+        },
+      ],
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    ImagePicker.launchImageLibrary(options, response => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+        alert(response.customButton);
+      } else {
+        let source = response;
+        // You can also display the image using data:
+        // let source = {
+        //   uri: 'data:image/jpeg;base64,' + response.data
+        // };
+        // setFilePath(source);
+        console.log('gambar', source);
+      }
+    });
+  };
+  const chooseCamera = () => {
+    let options = {
+      title: 'Select Image',
+      customButtons: [
+        {
+          name: 'customOptionKey',
+          title: 'Choose Photo from Custom Option',
+        },
+      ],
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    ImagePicker.launchCamera(options, response => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+        alert(response.customButton);
+      } else {
+        let source = response;
+        // You can also display the image using data:
+        // let source = {
+        //   uri: 'data:image/jpeg;base64,' + response.data
+        // };
+        // setFilePath(source);
+        console.log('gambar', source);
+      }
+    });
+  };
   return (
     <View style={{flex: 1, justifyContent: 'center'}}>
       <View style={styles.bottomNavigationView}>
@@ -37,32 +108,39 @@ const Share_mode = ({value}) => {
           }}>
           <View style={styles.container2}>
             <View style={styles.avatarWrapper}>
-              <TouchableOpacity
-                onPress={() => navigation.navigate('NewFeedScreen')}>
+              <TouchableOpacity>
                 <Image style={styles.avatar} source={pdf} />
               </TouchableOpacity>
             </View>
           </View>
           <View style={styles.container2}>
             <View style={styles.avatarWrapper}>
-              <TouchableOpacity onPress={value}>
+              <TouchableOpacity onPress={chooseFile}>
                 <Image style={styles.avatar} source={picture} />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={styles.container2}>
+            <View style={styles.avatarWrapper}>
+              {/* onPress={() => navigation.navigate('NewFeedScreen')} */}
+              <TouchableOpacity>
+                <Image style={styles.avatar} source={video} />
               </TouchableOpacity>
             </View>
           </View>
           <View style={styles.container2}>
             <View style={styles.avatarWrapper}>
-              <Image style={styles.avatar} source={video} />
+              <TouchableOpacity>
+                <Image style={styles.avatar} source={xml} />
+              </TouchableOpacity>
             </View>
           </View>
           <View style={styles.container2}>
             <View style={styles.avatarWrapper}>
-              <Image style={styles.avatar} source={xml} />
-            </View>
-          </View>
-          <View style={styles.container2}>
-            <View style={styles.avatarWrapper}>
-              <Image style={styles.avatar} source={zip} />
+              <TouchableOpacity>
+                <Image style={styles.avatar} source={zip} />
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -78,12 +156,9 @@ const Share_mode = ({value}) => {
           }}>
           <View style={styles.container2}>
             <View style={styles.avatarWrapper}>
-              <Image
-                style={styles.avatar}
-                source={{
-                  uri: 'https://img.icons8.com/fluent/48/000000/file.png',
-                }}
-              />
+              <TouchableOpacity onPress={chooseCamera}>
+                <Image style={styles.avatar} source={camera} />
+              </TouchableOpacity>
             </View>
           </View>
           <View style={styles.container2}>

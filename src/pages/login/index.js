@@ -58,13 +58,16 @@ const Signin = props => {
 
       .then(response => {
         setLoading(false);
-        console.log(response);
+        console.log('tes login', response);
         if (response.status === true) {
           console.log(response);
           AsyncStorage.setItem('@id', JSON.stringify(response.data.id));
           AsyncStorage.setItem('@email', response.data.email);
           AsyncStorage.setItem('@access_token', response.data.token);
           AsyncStorage.setItem('@image', JSON.stringify(response.data.picture));
+          AsyncStorage.setItem('@name', JSON.stringify(response.data.name));
+          AsyncStorage.setItem('@no_hp', JSON.stringify(response.data.no_hp));
+
           props.navigation.navigate('home');
         } else {
           Alert.alert(response.message);

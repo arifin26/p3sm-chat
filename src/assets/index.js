@@ -22,7 +22,7 @@ import picture from './image/icon_share/picture.png';
 import video from './image/icon_share/play-button.png';
 import xml from './image/icon_share/xml.png';
 import zip from './image/icon_share/zip.png';
-
+import camera from './image/icon_share/camera.png';
 export {
   User,
   Back_button,
@@ -48,4 +48,5 @@ export {
   video,
   xml,
   zip,
+  camera,
 };

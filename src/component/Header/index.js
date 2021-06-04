@@ -1,9 +1,13 @@
 import React, {useState, useEffect} from 'react';
 import {Text, TouchableOpacity, Image, View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+
 import {User, Menu} from '../../assets';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const Header = ({title, onpress, inpress}) => {
+const Header = ({title, onpress}) => {
   const [image, setimage] = useState(null);
+  const navigation = useNavigation();
+
   AsyncStorage.getItem('@image').then(value => {
     if (value != null) {
       setimage(value);
@@ -20,7 +24,7 @@ const Header = ({title, onpress, inpress}) => {
         flexDirection: 'row',
       }}>
       <View style={{paddingTop: 10, paddingHorizontal: 15}}>
-        <TouchableOpacity onPress={inpress}>
+        <TouchableOpacity onPress={() => navigation.navigate('Profil')}>
           {image == null ? (
             <Image source={User} style={{width: 25, height: 25}} />
           ) : (
