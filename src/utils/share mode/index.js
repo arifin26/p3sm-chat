@@ -12,19 +12,28 @@ import {
   View,
   TouchableOpacity,
   Image,
+  TextInput,
+  Button,
+  Keyboard,
+  Dimensions,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import * as ImagePicker from 'react-native-image-picker';
-
+import Modal from 'react-native-modal';
 import {pdf, picture, video, xml, zip, camera} from '../../assets';
 //import basic react native components
-
+const win = Dimensions.get('window');
 //import to show social icons
-
 const Share_mode = ({value}) => {
   const navigation = useNavigation();
   const refRBSheet = useRef();
-  const [filePath, setFilePath] = useState({});
+  const [filePath, setFilePath] = useState(null);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [tinggi, settinggi] = useState('');
+  const [chatMessage, setchatMessage] = useState('');
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
 
   const chooseFile = () => {
     let options = {
@@ -56,10 +65,88 @@ const Share_mode = ({value}) => {
         // let source = {
         //   uri: 'data:image/jpeg;base64,' + response.data
         // };
-        // setFilePath(source);
+        setFilePath(source);
+        setModalVisible(true);
         console.log('gambar', source);
       }
     });
+  };
+
+  const Modal_image = () => {
+    return (
+      <View style={{}}>
+        {filePath == null ? null : (
+          <View
+            style={{
+              flex: 1,
+            }}>
+            <Modal isVisible={isModalVisible}>
+              <View style={{alignItems: 'center'}}>
+                <Image
+                  source={{uri: filePath.uri}}
+                  style={{
+                    height:
+                      // filePath.height == filePath.width
+                      //   ? filePath.height / 3
+                      //   : filePath.height / 10,
+                      300,
+                    width:
+                      // filePath.height == filePath.width
+                      //   ? filePath.width / 3
+                      //   : filePath.width / 10,
+                      300,
+                  }}
+                />
+              </View>
+              <View
+                style={{
+                  alignSelf: 'center',
+                  marginTop: 20,
+                  justifyContent: 'center',
+                  marginRight: 10,
+                  height: 43,
+                  width: 120,
+                  elevation: 5,
+                  backgroundColor: '#00c6ff',
+                  borderRadius: 10,
+                }}>
+                {/* <TextInput
+                  inputStyle={{color: 'red'}}
+                  style={{
+                    flex: 1,
+                    backgroundColor: '#fff',
+                    color: '#000',
+                    paddingLeft: 15,
+                    paddingRight: 15,
+                    borderWidth: 1,
+                    borderRadius: 10,
+                    borderColor: '#00c6ff',
+                    width: 275,
+                    alignItems: 'center',
+                  }}
+                  value={chatMessage}
+                  onChangeText={msg => setchatMessage(msg)}
+                  placeholder="Type a message" //dummy@abc.com
+                  placeholderTextColor="#00c6ff"
+                  onSubmitEditing={Keyboard.dismiss}
+                  blurOnSubmit={false}
+                  multiline={true}
+                  onContentSizeChange={event =>
+                    settinggi(event.nativeEvent.contentSize.height)
+                  }
+                  underlineColorAndroid="transparent"
+                /> */}
+                <TouchableOpacity onPress={toggleModal}>
+                  <Text style={{textAlign: 'center', color: '#FFF'}}>
+                    KIRIM GAMBAR
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </Modal>
+          </View>
+        )}
+      </View>
+    );
   };
   const chooseCamera = () => {
     let options = {
@@ -92,6 +179,8 @@ const Share_mode = ({value}) => {
         //   uri: 'data:image/jpeg;base64,' + response.data
         // };
         // setFilePath(source);
+        setFilePath(source);
+        setModalVisible(true);
         console.log('gambar', source);
       }
     });
@@ -203,6 +292,7 @@ const Share_mode = ({value}) => {
           </View>
         </View>
       </View>
+      <Modal_image />
     </View>
   );
 };

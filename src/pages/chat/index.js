@@ -47,6 +47,8 @@ const Chat = props => {
   const [messages, setmessages] = useState('');
   const messagesEndRef = useRef(null);
   const refRBSheet = useRef();
+  const [limit, setlimit] = useState(0);
+
   const scrollToBottom = () => {
     const scroll =
       messagesEndRef.current?.scrollHeight -
@@ -55,26 +57,35 @@ const Chat = props => {
   };
 
   const data_chat = () => {
+    console.log('route', props.route.params);
+
     AsyncStorage.getItem('@access_token').then(value => {
       fetch(
-        `${SOCKET_URL}/api/v1/getChat/${props.route.params.tipe}/${props.route.params.id}`,
+        `${SOCKET_URL}/api/v1/lazyChat/${props.route.params.tipe}/${props.route.params.id}`,
         {
-          method: 'GET',
+          method: 'POST',
           headers: {
             Authorization: `Bearer ${value}`,
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify({limit: limit}),
         },
       )
         .then(res => res.json())
         .then(res => {
-          setchatMessages(res.data);
+          var data = res.data;
+          if (res.data.length > 0) {
+            setlimit(limit + 10);
+
+            setchatMessages([...chatMessages, ...res.data]);
+          }
         })
         .catch(err => {
           console.log('err', err);
         });
     });
   };
+
   useEffect(() => {
     chatMessage != '' ? set_isi_teks(true) : set_isi_teks(false);
   });
@@ -96,7 +107,7 @@ const Chat = props => {
           message.send_by !== null &&
           props.route.params.room_id == message.room_id
         ) {
-          setchatMessages(item => [...item, message]);
+          setchatMessages(item => [message, ...item]);
         }
       });
     });
@@ -110,7 +121,19 @@ const Chat = props => {
     });
     PushNotification.configure({
       onRegister: function (token) {
-        console.log('TOKEN:', token);
+        console.log('TOKEN:', token.token);
+        AsyncStorage.getItem('@access_token').then(value => {
+          fetch(`${SOCKET_URL}/api/v1/tokenFirebase`, {
+            method: 'POST',
+            headers: {
+              Authorization: `bearer ${value}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({token: `${token.token}`}),
+          })
+            .then(res => res.json())
+            .then(res => {});
+        });
       },
 
       onNotification: function (notification) {
@@ -157,6 +180,7 @@ const Chat = props => {
     // socket.on(NEW_CHAT_MESSAGE_EVENT, ({res_id, msg, username}) => {
     //   setchatMessages({msg, res_id, username});
     // });
+    setlimit(limit + 1);
 
     AsyncStorage.getItem('@id').then(value => {
       socket.emit('chatMessage', {
@@ -191,6 +215,7 @@ const Chat = props => {
       </View>
     );
   };
+
   return (
     <View style={{flex: 1, backgroundColor: '#fff'}}>
       <StatusBar backgroundColor="#00c6ff" />
@@ -200,6 +225,7 @@ const Chat = props => {
         image={props.route.params.picture}
         // inpress
       />
+
       <KeyboardAvoidingView style={styles.keyboard}>
         {/* <FlatList
             data={this.state.chatMessages}
@@ -208,11 +234,13 @@ const Chat = props => {
             }}
             renderItem={this._renderItem}
           /> */}
-        <AutoScrollFlatList
+        <FlatList
           ref={messagesEndRef}
           threshold={20}
+          inverted={true}
           data={chatMessages}
           keyExtractor={(item, index) => item.time}
+          onEndReached={data_chat}
           renderItem={({item}) => {
             if (parseInt(item.send_by) !== id) {
               return (

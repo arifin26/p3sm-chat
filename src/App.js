@@ -12,36 +12,115 @@ export default function App() {
   );
 }
 
-// getLoginAPI = () => {
+// import React, {useState, useEffect} from 'react';
 
-//   let details = {
-//       'username': 'username',
-//       'password': 'demo'
+// import {
+//   SafeAreaView,
+//   View,
+//   Text,
+//   StyleSheet,
+//   FlatList,
+//   ActivityIndicator,
+// } from 'react-native';
+
+// const App = () => {
+//   const [loading, setLoading] = useState(false);
+//   const [dataSource, setDataSource] = useState([]);
+//   const [offset, setOffset] = useState(1);
+//   const [isListEnd, setIsListEnd] = useState(false);
+
+//   useEffect(() => getData(), []);
+
+//   const getData = () => {
+//     console.log(offset);
+//     if (!loading && !isListEnd) {
+//       console.log('getData');
+//       setLoading(true);
+//       // Service to get the data from the server to render
+//       fetch('https://aboutreact.herokuapp.com/getpost.php?offset=' + offset)
+//         // Sending the currect offset with get request
+//         .then(response => response.json())
+//         .then(responseJson => {
+//           // Successful response from the API Call
+//           console.log(responseJson);
+//           if (responseJson.results.length > 0) {
+//             setOffset(offset + 1);
+//             // After the response increasing the offset
+//             setDataSource([...dataSource, ...responseJson.results]);
+//             setLoading(false);
+//           } else {
+//             setIsListEnd(true);
+//             setLoading(false);
+//           }
+//         })
+//         .catch(error => {
+//           console.error(error);
+//         });
+//     }
 //   };
 
-//   let formBody = [];
-//   for (let property in details) {
-//       let encodedKey = encodeURIComponent(property);
-//       let encodedValue = encodeURIComponent(details[property]);
-//       formBody.push(encodedKey + "=" + encodedValue);
-//   }
-//   formBody = formBody.join("&");
+//   const renderFooter = () => {
+//     return (
+//       // Footer View with Loader
+//       <View style={styles.footer}>
+//         {loading ? (
+//           <ActivityIndicator color="black" style={{margin: 15}} />
+//         ) : null}
+//       </View>
+//     );
+//   };
 
-//   fetch('url', {
-//       method: 'POST',
-//       headers: {
-//           'Authorization': 'Bearer token',
-//           'Content-Type': 'application/x-www-form-urlencoded'
-//       },
-//       body: formBody
-//   }).then((response) => response.json())
-//       .then((responseData) => {
-//           console.log(responseData);
+//   const ItemView = ({item}) => {
+//     return (
+//       // Flat List Item
+//       <Text style={styles.itemStyle} onPress={() => getItem(item)}>
+//         {item.id}
+//         {'.'}
+//         {item.title.toUpperCase()}
+//       </Text>
+//     );
+//   };
 
-//           AlertIOS.alert(
-//               "POST Response",
-//               "Response Body " + JSON.stringify(responseData.role)
-//           );
-//       })
-//       .done();
+//   const ItemSeparatorView = () => {
+//     return (
+//       // Flat List Item Separator
+//       <View
+//         style={{
+//           height: 0.5,
+//           width: '100%',
+//           backgroundColor: '#C8C8C8',
+//         }}
+//       />
+//     );
+//   };
+
+//   const getItem = item => {
+//     // Function for click on an item
+//     alert('Id : ' + item.id + ' Title : ' + item.title);
+//   };
+
+//   return (
+//     <SafeAreaView style={{flex: 1}}>
+//       <FlatList
+//         data={dataSource}
+//         keyExtractor={(item, index) => index.toString()}
+//         ItemSeparatorComponent={ItemSeparatorView}
+//         renderItem={ItemView}
+//         ListFooterComponent={renderFooter}
+//         onEndReached={getData}
+//         onEndReachedThreshold={0.5}
+//       />
+//     </SafeAreaView>
+//   );
 // };
+
+// const styles = StyleSheet.create({
+//   footer: {
+//     padding: 10,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     flexDirection: 'row',
+//   },
+// });
+
+// export default App;
