@@ -92,7 +92,14 @@ const Signin = props => {
         <View style={{marginTop: 100}}>
           <KeyboardAvoidingView enabled>
             <View style={{alignItems: 'center'}}>
-              <Text style={{color: '#fff', fontSize: 40}}>P3SM CHAT</Text>
+              <Text
+                style={{
+                  color: '#fff',
+                  fontSize: 40,
+                  fontFamily: 'Poppins-Black',
+                }}>
+                P3SM MESSENGER
+              </Text>
             </View>
             <View style={{paddingTop: 50}}>
               <View style={styles.SectionStyle}>
@@ -167,6 +174,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     paddingVertical: 10,
     fontSize: 16,
+    fontFamily: 'Poppins-Bold',
   },
   inputStyle: {
     flex: 1,
@@ -177,6 +185,7 @@ const styles = StyleSheet.create({
     color: '#000',
     borderRadius: 10,
     borderColor: '#fff',
+    fontFamily: 'Poppins-Bold',
   },
   registerTextStyle: {
     color: '#FFFFFF',

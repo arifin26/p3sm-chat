@@ -17,11 +17,14 @@ import {Bangunan} from '../../../assets';
 import {useNavigation} from '@react-navigation/native';
 import {SOCKET_URL} from '../../../utils/API';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import moment from 'moment';
+import 'moment/locale/id';
 import DraggableFlatList, {
   RenderItemParams,
 } from 'react-native-draggable-flatlist';
 const Grup = () => {
   const NUM_ITEMS = 10;
+  moment.locale();
   const navigation = useNavigation();
 
   const [modalVisible, setmodalVisible] = useState(false);
@@ -49,7 +52,6 @@ const Grup = () => {
         });
     });
 
-  
     BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', back_Button_Press);
@@ -100,7 +102,9 @@ const Grup = () => {
                       ellipsizeMode="tail">
                       {item.name}
                     </Text>
-                    <Text style={styles.mblTxt}>{item.tipe}</Text>
+                    <Text style={styles.mblTxt}>
+                      {moment(item.sent_at).locale('id').format('h:mm')}
+                    </Text>
                   </View>
                   <View style={styles.msgContainer}>
                     <Text style={styles.msgTxt}>{item.last_message}</Text>
@@ -152,8 +156,9 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     fontWeight: '600',
     color: '#222',
-    fontSize: 18,
+    fontSize: 15,
     width: 170,
+    fontFamily: 'Poppins-SemiBold',
   },
   mblTxt: {
     fontWeight: '200',
@@ -165,9 +170,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   msgTxt: {
-    fontWeight: '400',
     color: '#008B8B',
     fontSize: 12,
     marginLeft: 15,
+    fontFamily: 'Poppins-LightItalic',
   },
 });

@@ -73,7 +73,7 @@ const Chat = props => {
       )
         .then(res => res.json())
         .then(res => {
-          var data = res.data;
+          console.log('data pesan', res.data);
           if (res.data.length > 0) {
             setlimit(limit + 10);
 

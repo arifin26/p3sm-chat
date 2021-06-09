@@ -46,12 +46,12 @@ const SplashScreen = props => {
         }}
       />
 
-      <ActivityIndicator
+      {/* <ActivityIndicator
         animating={animating}
         color="#00c6ff"
         size="large"
         style={styles.activityIndicator}
-      />
+      /> */}
     </View>
   );
 };

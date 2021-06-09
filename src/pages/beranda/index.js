@@ -33,7 +33,7 @@ export default function Beranda() {
     <View style={{flex: 1}}>
       <StatusBar backgroundColor="#fff" />
       <Header
-        title="P3SM CHAT"
+        title="P3SM MESSENGER"
         onpress={() => navigation.navigate('Pengaturan')}
       />
       <Grup />

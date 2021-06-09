@@ -18,6 +18,9 @@ import {
   Dimensions,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {SOCKET_URL} from '../../utils/API';
+import ImageResizer from 'react-native-image-resizer';
 import * as ImagePicker from 'react-native-image-picker';
 import Modal from 'react-native-modal';
 import {pdf, picture, video, xml, zip, camera} from '../../assets';
@@ -33,6 +36,38 @@ const Share_mode = ({value}) => {
   const [chatMessage, setchatMessage] = useState('');
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
+    Lampiran_gambar();
+  };
+  const Lampiran_gambar = () => {
+    AsyncStorage.getItem('@access_token').then(value => {
+      ImageResizer.createResizedImage(filePath.uri, 684, 684, 'JPEG', 80).then(
+        resizedImage => {
+          var gambar = resizedImage;
+          var data = new FormData();
+          data.append('lampiran', {
+            uri: gambar.uri,
+            type: 'image/jpeg',
+            name: 'image.jpeg',
+          });
+          console.log('data gambar', data._parts[0]);
+          fetch(`${SOCKET_URL}/api/v1/uploads/image`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${value}`,
+              'Content-Type': 'multipart/form-data',
+            },
+            body: data,
+          })
+            .then(res => res.json())
+            .then(res => {
+              console.log('data pesan', res);
+            })
+            .catch(err => {
+              console.log('err', err);
+            });
+        },
+      );
+    });
   };
 
   const chooseFile = () => {

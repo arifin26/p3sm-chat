@@ -46,8 +46,9 @@ const Header = ({title, onpress}) => {
         <Text
           style={{
             textAlign: 'center',
-            fontWeight: 'bold',
+
             fontSize: 16,
+            fontFamily: 'Poppins-Bold',
           }}>
           {title}
         </Text>
