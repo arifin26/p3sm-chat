@@ -118,14 +118,13 @@ const Pengaturan = () => {
           <Image source={Help} style={styles.pic} />
         </View>
         <View>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Pusat_bantuan')}>
+          <TouchableOpacity onPress={() => navigation.navigate('Tentang')}>
             <View style={styles.nameContainer}>
               <Text
                 style={styles.nameTxt}
                 numberOfLines={1}
                 ellipsizeMode="tail">
-                Pusat bantuan
+                Tentang
               </Text>
             </View>
           </TouchableOpacity>
@@ -205,10 +204,10 @@ const styles = StyleSheet.create({
   },
   nameTxt: {
     marginLeft: 15,
-    fontWeight: 'bold',
     color: '#222',
     fontSize: 15,
     width: 170,
+    fontFamily: 'Poppins-SemiBold',
   },
   mblTxt: {
     fontWeight: '200',

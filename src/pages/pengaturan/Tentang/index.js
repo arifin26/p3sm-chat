@@ -10,7 +10,7 @@ import {
 import Header_not_beranda from '../../../component/Header_not_beranda';
 import {useNavigation} from '@react-navigation/native';
 
-const Pusat_bantuan = () => {
+const Tentang = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const Pusat_bantuan = () => {
   };
   return (
     <View style={{flex: 1, backgroundColor: '#fff'}}>
-      <Header_not_beranda title="Pusat bantuan" />
+      <Header_not_beranda title="Tentang" />
 
       <View style={style.text}>
         {/* <Image
@@ -36,10 +36,10 @@ const Pusat_bantuan = () => {
           /> */}
 
         <View style={{paddingTop: 20}}>
-          <Text style={style.teks}>ZAMORA</Text>
+          <Text style={style.teks}>P3SM MESSENGER</Text>
           <Text style={style.teks_keterangan_versi}>
-            CSI Mandiri adalah aplikasi penunjang aktifitas {'\n'}kantor mulai
-            dari absensi, lembur, cuti pengajuan {'\n'}dan lain lain
+            P3sm Messenger adalah komunikasi berbasis teks {'\n'} yang dilakukan
+            secara langsung atau dalam waktu {'\n'} nyata (real time).
           </Text>
         </View>
       </View>
@@ -47,7 +47,7 @@ const Pusat_bantuan = () => {
   );
 };
 
-export default Pusat_bantuan;
+export default Tentang;
 
 const style = StyleSheet.create({
   text: {
@@ -64,9 +64,9 @@ const style = StyleSheet.create({
     textAlign: 'center',
   },
   teks: {
+    fontFamily: 'Poppins-Bold',
     color: '#ff8c00',
     fontSize: 25,
     textAlign: 'center',
-    fontWeight: 'bold',
   },
 });

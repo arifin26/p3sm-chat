@@ -29,7 +29,7 @@ const SplashScreen = props => {
       AsyncStorage.getItem('@access_token').then(value =>
         props.navigation.navigate(value === null ? 'Signin' : 'home'),
       );
-    }, 1000);
+    }, 2000);
   }, []);
 
   return (
@@ -38,10 +38,10 @@ const SplashScreen = props => {
       <Image
         source={LOGO_SPLASH}
         style={{
-          width: 60,
+          width: 200,
           resizeMode: 'contain',
           margin: 30,
-          height: 60,
+          height: 200,
           borderRadius: 60 / 2,
         }}
       />

@@ -7,7 +7,7 @@ import Edit_profil from './profil/edit_profil';
 import Info_panggilan from './beranda/panggilan/info panggilan';
 import Pengaturan from './pengaturan';
 import Pengaturan_akun from './pengaturan/pengaturan_akun';
-import Pusat_bantuan from './pengaturan/pengaturan_pusat_bantuan';
+import Tentang from './pengaturan/Tentang';
 import Ubah_sandi from './pengaturan/pengaturan_akun/ubah_password';
 import NewFeedScreen from './chat/component_chat/upload_video';
 export {
@@ -19,7 +19,7 @@ export {
   Info_panggilan,
   Pengaturan,
   Pengaturan_akun,
-  Pusat_bantuan,
+  Tentang,
   Ubah_sandi,
   SplashScreen,
   NewFeedScreen,

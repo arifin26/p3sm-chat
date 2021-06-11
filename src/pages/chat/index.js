@@ -16,6 +16,7 @@ import {
   StatusBar,
   Touchable,
   BackHandler,
+  ImageBackground,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RBSheet from 'react-native-raw-bottom-sheet';
@@ -23,20 +24,19 @@ import {SOCKET_URL} from '../../utils/API';
 import {AutoScrollFlatList} from 'react-native-autoscroll-flatlist';
 import Header_chat from '../../component/Header_chat';
 import IO from 'socket.io-client';
-import {send, file_send} from '../../assets';
+import {send, file_send, Background} from '../../assets';
 import Share_mode from '../../utils/share mode';
 import moment, {locale} from 'moment';
 import 'moment/locale/id';
-import PushNotification from 'react-native-push-notification';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import {useNavigation} from '@react-navigation/native';
 
+import {useNavigation} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
 let socket;
 const SOCKET_SERVER_URL = 'http://192.168.0.73:5000';
 
 const Chat = props => {
   const navigation = useNavigation();
-
+  const counter = useSelector(data => data.counter);
   moment.locale();
   const [id, setid] = useState(null);
   const [msg, setmsg] = useState('');
@@ -48,13 +48,6 @@ const Chat = props => {
   const messagesEndRef = useRef(null);
   const refRBSheet = useRef();
   const [limit, setlimit] = useState(0);
-
-  const scrollToBottom = () => {
-    const scroll =
-      messagesEndRef.current?.scrollHeight -
-      messagesEndRef.current?.clientHeight;
-    messagesEndRef.current.scrollToEnd({animated: false});
-  };
 
   const data_chat = () => {
     console.log('route', props.route.params);
@@ -74,11 +67,11 @@ const Chat = props => {
         .then(res => res.json())
         .then(res => {
           console.log('data pesan', res.data);
-          if (res.data.length > 0) {
-            setlimit(limit + 10);
+          // if (res.data.length > 0) {
+          setlimit(limit + 10);
 
-            setchatMessages([...chatMessages, ...res.data]);
-          }
+          setchatMessages([...chatMessages, ...res.data]);
+          // }
         })
         .catch(err => {
           console.log('err', err);
@@ -88,10 +81,19 @@ const Chat = props => {
 
   useEffect(() => {
     chatMessage != '' ? set_isi_teks(true) : set_isi_teks(false);
+    if (counter === undefined) {
+      return null;
+    } else {
+      submitChatMessage;
+    }
+    console.log('redux coba', limit);
   });
-  useEffect(() => {
-    scrollToBottom();
 
+  const set = message => {
+    setchatMessages(item => [message, ...item]);
+  };
+
+  useEffect(() => {
     AsyncStorage.getItem('@id').then(value => {
       setid(JSON.parse(value));
     });
@@ -107,7 +109,7 @@ const Chat = props => {
           message.send_by !== null &&
           props.route.params.room_id == message.room_id
         ) {
-          setchatMessages(item => [message, ...item]);
+          data_chat();
         }
       });
     });
@@ -119,47 +121,7 @@ const Chat = props => {
         targetId: props.route.params.id,
       });
     });
-    PushNotification.configure({
-      onRegister: function (token) {
-        console.log('TOKEN:', token.token);
-        AsyncStorage.getItem('@access_token').then(value => {
-          fetch(`${SOCKET_URL}/api/v1/tokenFirebase`, {
-            method: 'POST',
-            headers: {
-              Authorization: `bearer ${value}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({token: `${token.token}`}),
-          })
-            .then(res => res.json())
-            .then(res => {});
-        });
-      },
 
-      onNotification: function (notification) {
-        console.log('NOTIFICATION:', notification);
-
-        notification.finish(PushNotificationIOS.FetchResult.NoData);
-      },
-
-      onAction: function (notification) {
-        console.log('ACTION:', notification.action);
-        console.log('NOTIFICATION:', notification);
-      },
-
-      onRegistrationError: function (err) {
-        console.error(err.message, err);
-      },
-      permissions: {
-        alert: true,
-        badge: true,
-        sound: true,
-      },
-
-      popInitialNotification: true,
-
-      requestPermissions: true,
-    });
     BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
 
     data_chat();
@@ -181,7 +143,6 @@ const Chat = props => {
     //   setchatMessages({msg, res_id, username});
     // });
     setlimit(limit + 1);
-
     AsyncStorage.getItem('@id').then(value => {
       socket.emit('chatMessage', {
         msg: chatMessage,
@@ -227,158 +188,163 @@ const Chat = props => {
       />
 
       <KeyboardAvoidingView style={styles.keyboard}>
-        {/* <FlatList
+        <ImageBackground
+          source={Background}
+          blurRadius={1}
+          style={{backgroundColor: '#787776', height: '100%', width: '100%'}}>
+          {/* <FlatList
             data={this.state.chatMessages}
             keyExtractor={item => {
               return item.res_id;
             }}
             renderItem={this._renderItem}
           /> */}
-        <FlatList
-          ref={messagesEndRef}
-          threshold={20}
-          inverted={true}
-          data={chatMessages}
-          keyExtractor={(item, index) => item.time}
-          onEndReached={data_chat}
-          renderItem={({item}) => {
-            if (parseInt(item.send_by) !== id) {
-              return (
-                <View style={styles.eachMsg}>
-                  <View style={styles.msgBlock}>
-                    {/* <Text style={styles.msgTxt_name}>{item.sender_name}</Text> */}
-                    <Text style={styles.msgTxt}>{item.message}</Text>
-                    <View
-                      style={{
-                        flex: 1,
-                        alignItems: 'flex-end',
-                        marginTop: 20,
-                      }}>
-                      <Text style={styles.msgTxt_time}>
-                        {moment(item.time)
-                          .locale('id')
-                          .format('MMMM Do YYYY, h:mm:ss a')}
-                      </Text>
+          <FlatList
+            ref={messagesEndRef}
+            threshold={20}
+            inverted={true}
+            data={chatMessages}
+            keyExtractor={(item, index) => item.time}
+            onEndReached={data_chat}
+            renderItem={({item}) => {
+              if (parseInt(item.send_by) !== id) {
+                return (
+                  <View style={styles.eachMsg}>
+                    <View style={styles.leftBlock}>
+                      {/* <Text style={styles.msgTxt_name}>{item.sender_name}</Text> */}
+                      <Text style={styles.msgTxt_kanan}>{item.message}</Text>
+                      <View
+                        style={{
+                          flex: 1,
+                          alignItems: 'flex-end',
+                          marginTop: 20,
+                        }}>
+                        <Text style={styles.msgTxt_time}>
+                          {moment(item.time)
+                            .locale('id')
+                            .format('MMMM Do YYYY, h:mm:ss a')}
+                        </Text>
+                      </View>
                     </View>
                   </View>
-                </View>
-              );
-            } else {
-              return (
-                <View style={styles.rightMsg}>
-                  <View style={styles.rightBlock}>
-                    {/* <Text
+                );
+              } else {
+                return (
+                  <View style={styles.rightMsg}>
+                    <View style={styles.rightBlock}>
+                      {/* <Text
                       style={{fontSize: 13, color: '#fff', fontWeight: 'bold'}}>
                       {item.sender_name}
                     </Text> */}
-                    <Text style={styles.msgTxt}>{item.message}</Text>
-                    <View
-                      style={{
-                        flex: 1,
-                        alignItems: 'flex-end',
-                        marginTop: 20,
-                      }}>
-                      <Text style={styles.msgTxt_time}>
-                        {moment(item.time)
-                          .locale('id')
-                          .format('MMMM Do YYYY, h:mm:ss a')}
-                      </Text>
+                      <Text style={styles.msgTxt_kiri}>{item.message}</Text>
+                      <View
+                        style={{
+                          flex: 1,
+                          alignItems: 'flex-end',
+                          marginTop: 20,
+                        }}>
+                        <Text style={styles.msgTxt_time}>
+                          {moment(item.time)
+                            .locale('id')
+                            .format('MMMM Do YYYY, h:mm:ss a')}
+                        </Text>
+                      </View>
                     </View>
                   </View>
-                </View>
-              );
-            }
-            // return (
-            //   <View style={styles.eachMsg}>
-            //     <View style={styles.msgBlock}>
-            //       <Text style={styles.msgTxt_name}>{item.sender_name}</Text>
-            //       <Text style={styles.msgTxt}>{item.message}</Text>
-            //       <View
-            //         style={{flex: 1, alignItems: 'flex-end', marginTop: 20}}>
-            //         <Text style={styles.msgTxt_time}>
-            //           {
-            //             new Date(Date.parse(item.time))
-            //               .toTimeString()
-            //               .split(' ')[0]
-            //           }
-            //         </Text>
-            //       </View>
-            //     </View>
-            //   </View>
-            // );
-          }}
-        />
+                );
+              }
+              // return (
+              //   <View style={styles.eachMsg}>
+              //     <View style={styles.msgBlock}>
+              //       <Text style={styles.msgTxt_name}>{item.sender_name}</Text>
+              //       <Text style={styles.msgTxt}>{item.message}</Text>
+              //       <View
+              //         style={{flex: 1, alignItems: 'flex-end', marginTop: 20}}>
+              //         <Text style={styles.msgTxt_time}>
+              //           {
+              //             new Date(Date.parse(item.time))
+              //               .toTimeString()
+              //               .split(' ')[0]
+              //           }
+              //         </Text>
+              //       </View>
+              //     </View>
+              //   </View>
+              // );
+            }}
+          />
 
-        <View
-          style={{
-            flexDirection: 'row',
-            width: '100%',
-            justifyContent: 'space-between',
-          }}>
           <View
             style={{
-              height: Math.min(120, Math.max(35, tinggi)),
-              marginTop: 10,
-              marginBottom: 10,
-              marginLeft: 5,
-              width: 270,
+              flexDirection: 'row',
+              width: '100%',
+              justifyContent: 'space-between',
             }}>
-            <TextInput
-              inputStyle={{color: 'red'}}
+            <View
               style={{
-                flex: 1,
-                backgroundColor: '#fff',
-                color: '#000',
-                paddingLeft: 15,
-                paddingRight: 15,
-                borderWidth: 1,
-                borderRadius: 10,
-                borderColor: '#00c6ff',
-                width: 275,
-              }}
-              value={chatMessage}
-              onChangeText={msg => setchatMessage(msg)}
-              placeholder="Type a message" //dummy@abc.com
-              placeholderTextColor="#00c6ff"
-              onSubmitEditing={Keyboard.dismiss}
-              blurOnSubmit={false}
-              multiline={true}
-              onContentSizeChange={event =>
-                settinggi(event.nativeEvent.contentSize.height)
-              }
-              underlineColorAndroid="transparent"
-            />
+                height: Math.min(120, Math.max(35, tinggi)),
+                marginTop: 10,
+                marginBottom: 10,
+                marginLeft: 5,
+                width: 270,
+              }}>
+              <TextInput
+                inputStyle={{color: 'red'}}
+                style={{
+                  flex: 1,
+                  backgroundColor: '#fff',
+                  color: '#000',
+                  paddingLeft: 15,
+                  paddingRight: 15,
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  borderColor: '#00c6ff',
+                  width: 275,
+                }}
+                value={chatMessage}
+                onChangeText={msg => setchatMessage(msg)}
+                placeholder="Type a message" //dummy@abc.com
+                placeholderTextColor="#00c6ff"
+                onSubmitEditing={Keyboard.dismiss}
+                blurOnSubmit={false}
+                multiline={true}
+                onContentSizeChange={event =>
+                  settinggi(event.nativeEvent.contentSize.height)
+                }
+                underlineColorAndroid="transparent"
+              />
+            </View>
+            {isi_teks == false ? (
+              <View style={{justifyContent: 'center'}}>
+                <TouchableOpacity onPress={() => refRBSheet.current.open()}>
+                  <Image
+                    source={file_send}
+                    style={{
+                      height: 40,
+                      width: 40,
+                      alignSelf: 'center',
+                      marginRight: 20,
+                    }}
+                  />
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={{justifyContent: 'center'}}>
+                <TouchableOpacity onPress={submitChatMessage}>
+                  <Image
+                    style={{
+                      height: 40,
+                      width: 40,
+                      alignSelf: 'center',
+                      marginRight: 20,
+                    }}
+                    source={send}
+                  />
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
-          {isi_teks == false ? (
-            <View style={{justifyContent: 'center'}}>
-              <TouchableOpacity onPress={() => refRBSheet.current.open()}>
-                <Image
-                  source={file_send}
-                  style={{
-                    height: 40,
-                    width: 40,
-                    alignSelf: 'center',
-                    marginRight: 20,
-                  }}
-                />
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={{justifyContent: 'center'}}>
-              <TouchableOpacity onPress={submitChatMessage}>
-                <Image
-                  style={{
-                    height: 40,
-                    width: 40,
-                    alignSelf: 'center',
-                    marginRight: 20,
-                  }}
-                  source={send}
-                />
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
+        </ImageBackground>
       </KeyboardAvoidingView>
       <Dialog_media />
       {/* {chatMessages} */}
@@ -445,10 +411,10 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
 
-  msgBlock: {
+  leftBlock: {
     width: 220,
     borderRadius: 5,
-    backgroundColor: '#e4e4e4',
+    backgroundColor: '#767778',
     padding: 10,
     shadowColor: '#3d3d3d',
     shadowRadius: 2,
@@ -460,7 +426,7 @@ const styles = StyleSheet.create({
   rightBlock: {
     width: 220,
     borderRadius: 5,
-    backgroundColor: '#97c163',
+    backgroundColor: '#479840',
     padding: 10,
     shadowColor: '#3d3d3d',
     shadowRadius: 2,
@@ -474,15 +440,20 @@ const styles = StyleSheet.create({
     color: '#00c6ff',
     fontWeight: 'bold',
   },
-  msgTxt: {
+  msgTxt_kanan: {
     fontSize: 15,
-    color: '#555',
-    fontWeight: '600',
+    color: '#fff',
+    fontFamily: 'Poppins-Medium',
+  },
+  msgTxt_kiri: {
+    fontSize: 15,
+    color: '#fff',
+    fontFamily: 'Poppins-Medium',
   },
   msgTxt_time: {
-    fontSize: 10,
-    color: '#000',
-    fontWeight: '600',
+    fontSize: 9,
+    color: '#fff',
+    fontFamily: 'Poppins-LightItalic',
   },
   rightTxt: {
     fontSize: 15,

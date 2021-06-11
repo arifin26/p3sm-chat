@@ -12,7 +12,7 @@ import {
   Info_panggilan,
   Pengaturan,
   Pengaturan_akun,
-  Pusat_bantuan,
+  Tentang,
   Ubah_sandi,
   SplashScreen,
   NewFeedScreen,
@@ -73,8 +73,8 @@ function Screen() {
         options={{headerShown: false}}
       />
       <Stack.Screen
-        name="Pusat_bantuan"
-        component={Pusat_bantuan}
+        name="Tentang"
+        component={Tentang}
         options={{headerShown: false}}
       />
       <Stack.Screen

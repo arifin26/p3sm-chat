@@ -44,9 +44,9 @@ const Header_chat = ({name, onpress, inpress, status, image}) => {
               numberOfLines={1}
               style={{
                 width: 100,
-                fontWeight: 'bold',
+                fontFamily: 'Poppins-Bold',
                 color: '#fff',
-                fontSize: 17,
+                fontSize: 15,
               }}>
               {name}
             </Text>

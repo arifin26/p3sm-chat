@@ -11,7 +11,7 @@ import {
   BackHandler,
 } from 'react-native';
 import {Gap} from '../../utils';
-import {Edit} from '../../assets';
+import {Edit, User} from '../../assets';
 import Header_not_beranda from '../../component/Header_not_beranda';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -115,7 +115,10 @@ const Profil = () => {
           <View style={{alignItems: 'center'}}>
             <View style={Styles.view_teks_data}>
               <View style={Styles.icon}>
-                <Text style={Styles.teks_in_icon}>MN</Text>
+                <Image
+                  source={User}
+                  style={{height: 33, width: 33, alignSelf: 'center'}}
+                />
               </View>
               <View style={{justifyContent: 'center'}}>
                 <Text
@@ -179,12 +182,12 @@ const Profil = () => {
 
           <Gap height={35} />
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => navigation.navigate('Edit_profil')}
             style={Styles.buttonStyle}
             activeOpacity={0.5}>
             <Text style={Styles.buttonTextStyle}>Edit Profil</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <Gap height={35} />
         </View>
       </ScrollView>

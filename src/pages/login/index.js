@@ -98,7 +98,15 @@ const Signin = props => {
                   fontSize: 40,
                   fontFamily: 'Poppins-Black',
                 }}>
-                P3SM MESSENGER
+                P3SM
+              </Text>
+              <Text
+                style={{
+                  color: '#fff',
+                  fontSize: 40,
+                  fontFamily: 'Poppins-Black',
+                }}>
+                MESSENGER
               </Text>
             </View>
             <View style={{paddingTop: 50}}>
@@ -163,7 +171,7 @@ const styles = StyleSheet.create({
 
     color: '#FFFFFF',
 
-    height: 40,
+    height: 50,
     alignItems: 'center',
     borderRadius: 30,
     marginLeft: 55,
@@ -185,7 +193,6 @@ const styles = StyleSheet.create({
     color: '#000',
     borderRadius: 10,
     borderColor: '#fff',
-    fontFamily: 'Poppins-Bold',
   },
   registerTextStyle: {
     color: '#FFFFFF',

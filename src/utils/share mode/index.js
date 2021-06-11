@@ -1,10 +1,4 @@
-// Example of Bottom Sheet in React Native
-// https://aboutreact.com/react-native-bottom-sheet/
-
-// import React in our code
 import React, {useState, useRef} from 'react';
-
-// import all the components we are going to use
 import {
   SafeAreaView,
   StyleSheet,
@@ -22,12 +16,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SOCKET_URL} from '../../utils/API';
 import ImageResizer from 'react-native-image-resizer';
 import * as ImagePicker from 'react-native-image-picker';
+import {useDispatch} from 'react-redux';
 import Modal from 'react-native-modal';
 import {pdf, picture, video, xml, zip, camera} from '../../assets';
-//import basic react native components
 const win = Dimensions.get('window');
-//import to show social icons
+import {feed_back_gambar} from '../../redux/action';
+
 const Share_mode = ({value}) => {
+  const dispacth = useDispatch();
   const navigation = useNavigation();
   const refRBSheet = useRef();
   const [filePath, setFilePath] = useState(null);
@@ -61,6 +57,7 @@ const Share_mode = ({value}) => {
             .then(res => res.json())
             .then(res => {
               console.log('data pesan', res);
+              dispacth(feed_back_gambar(res));
             })
             .catch(err => {
               console.log('err', err);

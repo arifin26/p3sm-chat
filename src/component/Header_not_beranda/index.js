@@ -28,8 +28,8 @@ const Header_not_beranda = ({title, onpress}) => {
         <Text
           style={{
             textAlign: 'center',
-            fontWeight: 'bold',
             fontSize: 18,
+            fontFamily: 'Poppins-Bold',
           }}>
           {title}
         </Text>

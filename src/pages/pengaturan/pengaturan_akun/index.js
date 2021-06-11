@@ -168,7 +168,8 @@ const styles = StyleSheet.create({
   },
   nameTxt: {
     marginLeft: 15,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-SemiBold',
+
     color: '#222',
     fontSize: 15,
     width: 170,
